@@ -122,7 +122,6 @@ func NewFilerServer(defaultMux, readonlyMux *http.ServeMux, ip string, port int,
 		glog.V(0).Infof("Filer server bootstraps with master %s", fs.getMasterNode())
 
 		for {
-			glog.V(4).Infof("Longen >>")
 			glog.V(4).Infof("Filer server sending to master %s", fs.getMasterNode())
 			master, err := fs.detectHealthyMaster(fs.getMasterNode())
 			if err == nil {

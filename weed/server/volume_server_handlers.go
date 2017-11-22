@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/chrislusf/seaweedfs/weed/stats"
+	"github.com/chrislusf/seaweedfs/weed/glog"
 )
 
 /*
@@ -31,6 +32,7 @@ func (vs *VolumeServer) privateStoreHandler(w http.ResponseWriter, r *http.Reque
 		vs.GetOrHeadHandler(w, r)
 	case "DELETE":
 		stats.DeleteRequest()
+		glog.V(4).Infoln(">>> DELETE request received.")
 		vs.guard.WhiteList(vs.DeleteHandler)(w, r)
 	case "PUT":
 		stats.WriteRequest()

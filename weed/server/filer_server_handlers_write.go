@@ -219,6 +219,7 @@ func (fs *FilerServer) monolithicUploadAnalyzer(w http.ResponseWriter, r *http.R
 }
 
 func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
+	glog.V(4).Infoln(">>> Handle post: ", r.URL)
 
 	query := r.URL.Query()
 	replication := query.Get("replication")
@@ -259,7 +260,7 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 		q.Set("cm", "true")
 		u.RawQuery = q.Encode()
 	}
-	glog.V(4).Infoln("post to", u)
+	glog.V(4).Infoln(">>> assigned new fid and post to", u)
 
 	request := &http.Request{
 		Method:        r.Method,
@@ -285,7 +286,7 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 		writeJsonError(w, r, http.StatusInternalServerError, ra_err)
 		return
 	}
-	glog.V(4).Infoln("post result", string(resp_body))
+	glog.V(4).Infoln(">>> post result", string(resp_body))
 	var ret operation.UploadResult
 	unmarshal_err := json.Unmarshal(resp_body, &ret)
 	if unmarshal_err != nil {
@@ -314,16 +315,19 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	// also delete the old fid unless PUT operation
 	if r.Method != "PUT" {
 		if oldFid, err := fs.filer.FindFile(path); err == nil {
+			glog.V(4).Infof(">>> Old file exists: %s, try to delete it: %s", path, oldFid)
 			operation.DeleteFile(fs.getMasterNode(), oldFid, fs.jwt(oldFid))
 		} else if err != nil && err != filer.ErrNotFound {
 			glog.V(0).Infof("error %v occur when finding %s in filer store", err, path)
+		} else {
+			glog.V(4).Infof(">>> Old file Not exists: %s", path)
 		}
 	}
 
-	glog.V(4).Infoln("saving", path, "=>", fileId)
+	glog.V(4).Infoln(">>> saving mapping in filer: ", path, "=>", fileId)
 	if db_err := fs.filer.CreateFile(path, fileId); db_err != nil {
 		operation.DeleteFile(fs.getMasterNode(), fileId, fs.jwt(fileId)) //clean up
-		glog.V(0).Infof("failing to write %s to filer server : %v", path, db_err)
+		glog.V(0).Infof(">>> saving mapping in filer failed: %s, %v, clean up.", path, db_err)
 		writeJsonError(w, r, http.StatusInternalServerError, db_err)
 		return
 	}
@@ -505,7 +509,7 @@ func (fs *FilerServer) doAutoChunk(w http.ResponseWriter, r *http.Request, conte
 		}
 	}
 
-	glog.V(4).Infoln("saving", path, "=>", manifestFileId)
+	glog.V(4).Infoln(">>> saving NEW file: ", path, " => ", manifestFileId)
 	if db_err := fs.filer.CreateFile(path, manifestFileId); db_err != nil {
 		replyerr = db_err
 		filerResult.Error = db_err.Error()

@@ -120,7 +120,8 @@ func (v *Volume) writeNeedle(n *Needle) (size uint32, err error) {
 }
 
 func (v *Volume) deleteNeedle(n *Needle) (uint32, error) {
-	glog.V(4).Infof("delete needle %s", NewFileIdFromNeedle(v.Id, n).String())
+	glog.V(4).Infof(">>> Delete needle from volume: %s", NewFileIdFromNeedle(v.Id, n).String())
+
 	if v.readOnly {
 		return 0, fmt.Errorf("%s is read-only", v.dataFile.Name())
 	}

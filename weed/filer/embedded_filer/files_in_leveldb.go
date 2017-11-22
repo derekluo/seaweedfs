@@ -38,7 +38,7 @@ func genKey(dirId filer.DirectoryId, fileName string) []byte {
 }
 
 func (fl *FileListInLevelDb) CreateFile(dirId filer.DirectoryId, fileName string, fid string) (err error) {
-	glog.V(4).Infoln("directory", dirId, "fileName", fileName, "fid", fid)
+	glog.V(4).Infoln(">>> CreateFile (dir, fileName, fid): (", dirId, ", ", fileName, ", ", fid, ")")
 	return fl.db.Put(genKey(dirId, fileName), []byte(fid), nil)
 }
 func (fl *FileListInLevelDb) DeleteFile(dirId filer.DirectoryId, fileName string) (fid string, err error) {

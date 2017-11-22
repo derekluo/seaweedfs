@@ -10,6 +10,7 @@ import (
 
 	"net/http"
 
+	"github.com/chrislusf/seaweedfs/weed/glog"
 	"github.com/chrislusf/seaweedfs/weed/security"
 	"github.com/chrislusf/seaweedfs/weed/util"
 )
@@ -22,10 +23,14 @@ type DeleteResult struct {
 }
 
 func DeleteFile(master string, fileId string, jwt security.EncodedJwt) error {
+	glog.V(4).Infof(">>> DeleteFile:  %s, %v", master, fileId)
 	fileUrl, err := LookupFileId(master, fileId)
+
 	if err != nil {
 		return fmt.Errorf("Failed to lookup %s:%v", fileId, err)
 	}
+
+	glog.V(4).Infof(">>> Try to delete fileUrl: %s", fileUrl)
 	err = util.Delete(fileUrl, jwt)
 	if err != nil {
 		return fmt.Errorf("Failed to delete %s:%v", fileUrl, err)
@@ -47,6 +52,7 @@ type DeleteFilesResult struct {
 }
 
 func DeleteFiles(master string, fileIds []string) (*DeleteFilesResult, error) {
+	glog.V(4).Infof(">>> DeleteFile:  %s, %v", master, fileIds)
 	vid_to_fileIds := make(map[string][]string)
 	ret := &DeleteFilesResult{}
 	var vids []string
@@ -97,7 +103,10 @@ func DeleteFiles(master string, fileIds []string) (*DeleteFilesResult, error) {
 			for _, fid := range fidList {
 				values.Add("fid", fid)
 			}
-			jsonBlob, err := util.Post("http://"+server+"/delete", values)
+
+			var volume_server_url = "http://"+server+"/delete"
+			glog.V(4).Infoln(">>> DeteteFile: %s, %s", volume_server_url, values)
+			jsonBlob, err := util.Post(volume_server_url, values)
 			if err != nil {
 				ret.Errors = append(ret.Errors, err.Error()+" "+string(jsonBlob))
 				return

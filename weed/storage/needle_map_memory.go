@@ -76,7 +76,7 @@ func WalkIndexFile(r *os.File, fn func(key uint64, offset, size uint32) error) e
 	var readerOffset int64
 	bytes := make([]byte, 16*RowsToRead)
 	count, e := r.ReadAt(bytes, readerOffset)
-	glog.V(3).Infoln("file", r.Name(), "readerOffset", readerOffset, "count", count, "e", e)
+	glog.V(3).Infoln("Index File >>> file: ", r.Name(), ",readerOffset: ", readerOffset, ", count: ", count, ", e: ", e)
 	readerOffset += int64(count)
 	var (
 		key          uint64

@@ -292,6 +292,7 @@ func (s *Store) updateMaster() {
 
 func (s *Store) Delete(i VolumeId, n *Needle) (uint32, error) {
 	if v := s.findVolume(i); v != nil && !v.readOnly {
+		glog.V(4).Infoln(">>> Delete: ", NewFileIdFromNeedle(i, n).String())
 		return v.deleteNeedle(n)
 	}
 	return 0, nil
