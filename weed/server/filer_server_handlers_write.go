@@ -219,7 +219,25 @@ func (fs *FilerServer) monolithicUploadAnalyzer(w http.ResponseWriter, r *http.R
 }
 
 func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
-	glog.V(4).Infoln(">>> Handle post: ", r.URL)
+	glog.V(4).Infoln(">>> Handling post: ", r.URL)
+
+	requestPath := r.URL.Path
+	if !strings.HasSuffix(requestPath, "/") {
+		if oldFid, err := fs.filer.FindFile(requestPath); err == nil {
+			glog.V(4).Infof(">>> Path FOUND, bypassing: %s, %s", requestPath, oldFid)
+
+			reply := FilerPostResult{
+				Fid:   oldFid,
+				Url:   requestPath,
+			}
+
+			writeJsonQuiet(w, r, http.StatusFound, reply)
+			return
+		} else if err != nil && err != filer.ErrNotFound {
+			glog.V(0).Infof("error %v occur when finding %s in filer store", err, requestPath)
+			return
+		}
+	}
 
 	query := r.URL.Query()
 	replication := query.Get("replication")
