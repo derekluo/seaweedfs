@@ -6,6 +6,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"golang.org/x/image/webp"
 
 	"github.com/chrislusf/seaweedfs/weed/glog"
 	"github.com/disintegration/imaging"
@@ -51,6 +52,7 @@ func Resized(ext string, data []byte, width, height int, mode string) (resized [
 		}
 		return buf.Bytes(), dstImage.Bounds().Dx(), dstImage.Bounds().Dy()
 	} else {
+		glog.Error("luoding:")
 		glog.Error(err)
 	}
 	return data, 0, 0
