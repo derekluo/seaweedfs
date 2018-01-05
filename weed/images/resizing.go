@@ -6,8 +6,9 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"golang.org/x/image/webp"
+        "image/color"
 
+	_ "golang.org/x/image/webp"
 	"github.com/chrislusf/seaweedfs/weed/glog"
 	"github.com/disintegration/imaging"
 )
@@ -27,9 +28,9 @@ func Resized(ext string, data []byte, width, height int, mode string) (resized [
 			case "fill":
 				dstImage = imaging.Fill(srcImage, width, height, imaging.Center, imaging.Lanczos)
 			case "2f":
-				spriteImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
-				bgImage = imaging.New(newW, newH, color.NRGBA{0, 0, 0, 0})
-				dstImg = imaging.PasteCenter(bgImage, spriteImage)
+				var spriteImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
+				var bgImage = imaging.New(width, height, color.White)
+				dstImage = imaging.PasteCenter(bgImage, spriteImage)
 			default:
 				if width == height && bounds.Dx() != bounds.Dy() {
 					dstImage = imaging.Thumbnail(srcImage, width, height, imaging.Lanczos)
@@ -52,7 +53,6 @@ func Resized(ext string, data []byte, width, height int, mode string) (resized [
 		}
 		return buf.Bytes(), dstImage.Bounds().Dx(), dstImage.Bounds().Dy()
 	} else {
-		glog.Error("luoding:")
 		glog.Error(err)
 	}
 	return data, 0, 0
