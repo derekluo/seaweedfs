@@ -25,6 +25,10 @@ func Resized(ext string, data []byte, width, height int, mode string) (resized [
 				dstImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
 			case "fill":
 				dstImage = imaging.Fill(srcImage, width, height, imaging.Center, imaging.Lanczos)
+			case "fit_fill":
+				spriteImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
+				bgImage = imaging.New(newW, newH, color.NRGBA{0, 0, 0, 0})
+				dstImg = imaging.PasteCenter(bgImage, spriteImage)
 			default:
 				if width == height && bounds.Dx() != bounds.Dy() {
 					dstImage = imaging.Thumbnail(srcImage, width, height, imaging.Lanczos)
