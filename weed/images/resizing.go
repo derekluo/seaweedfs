@@ -25,7 +25,7 @@ func Resized(ext string, data []byte, width, height int, mode string) (resized [
 				dstImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
 			case "fill":
 				dstImage = imaging.Fill(srcImage, width, height, imaging.Center, imaging.Lanczos)
-			case "fit_fill":
+			case "2f":
 				spriteImage = imaging.Fit(srcImage, width, height, imaging.Lanczos)
 				bgImage = imaging.New(newW, newH, color.NRGBA{0, 0, 0, 0})
 				dstImg = imaging.PasteCenter(bgImage, spriteImage)
